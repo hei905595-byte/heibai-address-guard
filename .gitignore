@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.vercel/
+.DS_Store
+Thumbs.db
+*.log
+*.local
+guard-fullpage*.png

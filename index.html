@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>黑白地址安全检测</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="guard-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="heibai address guard">
+          <span class="brand-mark">HB</span>
+          <span>
+            <strong>heibai.com</strong>
+            <small>Address Guard</small>
+          </span>
+        </a>
+        <button class="ghost-button" type="button">TG 监控</button>
+      </header>
+
+      <main>
+        <section class="hero">
+          <span class="eyebrow">TRON / Ethereum 双链风控</span>
+          <h1>输入地址，检测风险</h1>
+          <p>识别黑名单、异常收付、地址投毒与授权风险，生成可分享的安全报告。</p>
+
+          <form class="scan-form" id="scanForm">
+            <div class="chain-switch" role="tablist" aria-label="选择检测链">
+              <button class="active" data-chain="tron" type="button">TRON</button>
+              <button data-chain="ethereum" type="button">Ethereum</button>
+            </div>
+            <div class="input-row">
+              <input
+                id="addressInput"
+                autocomplete="off"
+                placeholder="请输入 TRX 或 ETH 地址"
+                required
+              />
+              <button type="submit">检测</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="risk-report" id="riskReport" aria-live="polite">
+          <div class="score-card">
+            <div class="score-ring" id="scoreRing" style="--score: 82">
+              <span id="scoreValue">82</span>
+              <small>安全分</small>
+            </div>
+            <div>
+              <span class="status-pill safe" id="riskLevel">低风险</span>
+              <h2 id="reportTitle">示例地址安全报告</h2>
+              <p id="reportAddress">当前展示为预览数据，真实接口接入后自动生成检测结果。</p>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article>
+              <span>USDT 收入</span>
+              <strong id="incomeValue">128,640</strong>
+              <small>近 90 天</small>
+            </article>
+            <article>
+              <span>USDT 支出</span>
+              <strong id="outcomeValue">92,180</strong>
+              <small>近 90 天</small>
+            </article>
+            <article>
+              <span>交易对象</span>
+              <strong id="counterpartyValue">46</strong>
+              <small>去重地址</small>
+            </article>
+            <article>
+              <span>风险命中</span>
+              <strong id="hitValue">0</strong>
+              <small>黑名单/投毒</small>
+            </article>
+          </div>
+        </section>
+
+        <section class="risk-list" aria-label="风险检测项目">
+          <div class="section-head">
+            <span>Risk Checks</span>
+            <h2>检测项目</h2>
+          </div>
+
+          <article class="check-card clear">
+            <span class="check-icon">✓</span>
+            <div>
+              <h3>黑名单地址排查</h3>
+              <p>检测地址是否命中已知风险库、交易所冻结标签或异常资金来源。</p>
+            </div>
+          </article>
+
+          <article class="check-card warn">
+            <span class="check-icon">!</span>
+            <div>
+              <h3>地址投毒相似记录</h3>
+              <p>识别最近交易中是否存在首尾相似、诱导复制的可疑地址。</p>
+            </div>
+          </article>
+
+          <article class="check-card clear">
+            <span class="check-icon">✓</span>
+            <div>
+              <h3>USDT 异常收付分析</h3>
+              <p>统计大额、密集、小额测试等异常交易模式，辅助判断地址质量。</p>
+            </div>
+          </article>
+
+          <article class="check-card danger">
+            <span class="check-icon">!</span>
+            <div>
+              <h3>授权风险检测</h3>
+              <p>Ethereum 地址可扩展检测 ERC-20 授权额度和高风险合约交互。</p>
+            </div>
+          </article>
+        </section>
+
+        <section class="tools">
+          <button class="primary-action" id="batchButton" type="button">批量检测地址</button>
+          <button class="secondary-action" id="shareButton" type="button">生成报告链接</button>
+        </section>
+
+        <section class="retention-card">
+          <span class="tg-mark">↗</span>
+          <div>
+            <h2>TG 地址监控提醒</h2>
+            <p>地址出现大额转入、异常转出、投毒记录时自动提醒，适合 OTC、工作室和高频收款场景。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./config.js"></script>
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
