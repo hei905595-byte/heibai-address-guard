@@ -31,6 +31,8 @@ const state = {
 
 const form = document.querySelector("#scanForm");
 const input = document.querySelector("#addressInput");
+const status = document.querySelector("#scanStatus");
+const reportPanel = document.querySelector("#riskReport");
 const chainButtons = document.querySelectorAll(".chain-switch button");
 
 document.querySelectorAll("[data-app-link]").forEach((link) => {
@@ -51,8 +53,16 @@ form.addEventListener("submit", async (event) => {
   const address = input.value.trim();
   if (!address) return;
 
-  const report = await scanAddress(state.chain, address);
-  renderReport(state.chain, address, report);
+  status.textContent = "正在检测，请稍候…";
+  reportPanel.hidden = true;
+  try {
+    const report = await scanAddress(state.chain, address);
+    renderReport(state.chain, address, report);
+    reportPanel.hidden = false;
+    status.textContent = report.disclaimer || "检测完成；结果来自正式风险接口。";
+  } catch (error) {
+    status.textContent = error instanceof Error ? error.message : "检测失败，请稍后重试。";
+  }
 });
 
 document.querySelector("#batchButton").addEventListener("click", () => {
@@ -71,24 +81,25 @@ async function scanAddress(chain, address) {
     return getPreviewReport(address);
   }
 
-  try {
-    const url = `${endpoint.replace(/\/+$/, "")}/${encodeURIComponent(address)}`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("scan failed");
-    return normalizeReport(await response.json());
-  } catch {
-    return getPreviewReport(address);
-  }
+  const url = `${endpoint.replace(/\/+$/, "")}/${encodeURIComponent(address)}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`风险接口暂不可用（${response.status}），未生成模拟报告。`);
+  return normalizeReport(await response.json());
 }
 
 function normalizeReport(payload) {
+  const score = Number(payload.score);
+  if (!Number.isFinite(score) || score < 0 || score > 100 || !payload.level) {
+    throw new Error("风险接口返回了不完整的数据，未展示报告。");
+  }
   return {
-    score: payload.score ?? 72,
-    level: payload.level ?? "低风险",
+    score,
+    level: payload.level,
     income: payload.income ?? payload.usdtIn ?? 0,
     outcome: payload.outcome ?? payload.usdtOut ?? 0,
     counterparties: payload.counterparties ?? payload.counterpartyCount ?? 0,
     hits: payload.hits ?? payload.riskHits ?? 0,
+    disclaimer: payload.disclaimer || "风险结果仅供辅助判断，不构成资金安全保证。",
   };
 }
 
@@ -130,5 +141,6 @@ function renderReport(chain, address, report) {
 }
 
 function formatNumber(value) {
-  return Number(value || 0).toLocaleString("en-US");
+  if (value === null || value === undefined || value === "") return "未采集";
+  return Number(value).toLocaleString("en-US");
 }

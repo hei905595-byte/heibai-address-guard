@@ -46,9 +46,10 @@
               <button type="submit">检测</button>
             </div>
           </form>
+          <p class="scan-status" id="scanStatus" role="status">正式检测只展示后端返回的真实结果。</p>
         </section>
 
-        <section class="risk-report" id="riskReport" aria-live="polite">
+        <section class="risk-report" id="riskReport" aria-live="polite" hidden>
           <div class="score-card">
             <div class="score-ring" id="scoreRing" style="--score: 82">
               <span id="scoreValue">82</span>

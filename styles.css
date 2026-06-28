@@ -472,3 +472,12 @@ main {
     box-shadow: 0 24px 90px rgba(0, 0, 0, 0.4);
   }
 }
+.scan-status {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.risk-report[hidden] {
+  display: none;
+}
