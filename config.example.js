@@ -5,4 +5,9 @@ window.APP_CONFIG = {
     scanEthereum: "/api/risk/ethereum",
     batchScan: "/api/risk/batch",
   },
+  navigation: {
+    points: "https://points.your-domain.com",
+    query: "https://query.your-domain.com",
+    guard: "https://guard.your-domain.com",
+  },
 };

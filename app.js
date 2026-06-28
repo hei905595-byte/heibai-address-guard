@@ -5,6 +5,11 @@ const DEFAULT_CONFIG = {
     scanEthereum: "/api/risk/ethereum",
     batchScan: "/api/risk/batch",
   },
+  navigation: {
+    points: "/points",
+    query: "/query",
+    guard: "/guard",
+  },
 };
 
 const CONFIG = {
@@ -13,6 +18,10 @@ const CONFIG = {
   endpoints: {
     ...DEFAULT_CONFIG.endpoints,
     ...(window.APP_CONFIG?.endpoints ?? {}),
+  },
+  navigation: {
+    ...DEFAULT_CONFIG.navigation,
+    ...(window.APP_CONFIG?.navigation ?? {}),
   },
 };
 
@@ -23,6 +32,10 @@ const state = {
 const form = document.querySelector("#scanForm");
 const input = document.querySelector("#addressInput");
 const chainButtons = document.querySelectorAll(".chain-switch button");
+
+document.querySelectorAll("[data-app-link]").forEach((link) => {
+  link.href = CONFIG.navigation[link.dataset.appLink];
+});
 
 chainButtons.forEach((button) => {
   button.addEventListener("click", () => {

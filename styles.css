@@ -58,6 +58,39 @@ button {
   backdrop-filter: blur(14px);
 }
 
+.suite-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 0 18px 14px;
+  border-bottom: 1px solid rgba(120, 167, 216, 0.09);
+  background: rgba(6, 15, 28, 0.9);
+}
+
+.suite-nav a {
+  min-height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(120, 167, 216, 0.16);
+  border-radius: 10px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.suite-nav a:hover,
+.suite-nav a:focus-visible {
+  color: var(--text);
+  border-color: rgba(38, 214, 255, 0.4);
+}
+
+.suite-nav a.active {
+  color: #e8fbff;
+  border-color: rgba(38, 214, 255, 0.52);
+  background: linear-gradient(135deg, rgba(38, 214, 255, 0.2), rgba(79, 140, 255, 0.12));
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
