@@ -39,3 +39,5 @@ window.APP_CONFIG = {
 ```
 
 把 `backend.example.com` 替换为真实后端域名即可。
+
+批量风险检测最多接受 20 个 TRON / Ethereum 地址。分享按钮生成“复查链接”，打开时会重新请求最新风险结果，不保存或伪造历史报告。

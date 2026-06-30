@@ -481,3 +481,24 @@ main {
 .risk-report[hidden] {
   display: none;
 }
+
+.batch-dialog { width: min(92vw, 620px); padding: 0; border: 1px solid rgba(38,214,255,.3); border-radius: 18px; color: var(--text); background: #0a1728; box-shadow: 0 24px 90px rgba(0,0,0,.55); }
+.batch-dialog::backdrop { background: rgba(2,8,17,.76); backdrop-filter: blur(5px); }
+.batch-dialog-card { display: grid; gap: 14px; padding: 20px; }
+.batch-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.batch-dialog-head span, .batch-dialog-head strong { display: block; }
+.batch-dialog-head span { color: var(--cyan); font-size: 12px; font-weight: 800; }
+.batch-dialog-head strong { margin-top: 5px; font-size: 18px; }
+.batch-dialog-head button { border: 0; color: var(--muted); background: transparent; font-size: 26px; }
+.batch-dialog textarea { width: 100%; resize: vertical; padding: 12px; border: 1px solid var(--line); border-radius: 12px; outline: none; color: var(--text); background: rgba(255,255,255,.04); }
+.batch-dialog textarea:focus { border-color: rgba(38,214,255,.6); }
+.batch-dialog p { margin: 0; color: var(--muted); font-size: 13px; }
+.batch-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.batch-actions button { min-height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 10px; color: var(--text); background: rgba(255,255,255,.05); }
+.batch-actions button[type="submit"] { border: 0; color: #031321; background: linear-gradient(120deg,var(--cyan),#66f2c2); font-weight: 800; }
+.batch-results { display: grid; gap: 8px; max-height: 280px; overflow: auto; }
+.batch-results article { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.03); }
+.batch-results strong, .batch-results span { display: block; }
+.batch-results span { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.batch-results em { color: var(--green); font-style: normal; font-weight: 800; text-align: right; }
+.batch-results em[data-ok="false"] { color: #ff8ca1; }

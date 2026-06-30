@@ -52,35 +52,35 @@
         <section class="risk-report" id="riskReport" aria-live="polite" hidden>
           <div class="score-card">
             <div class="score-ring" id="scoreRing" style="--score: 82">
-              <span id="scoreValue">82</span>
+              <span id="scoreValue">--</span>
               <small>安全分</small>
             </div>
             <div>
-              <span class="status-pill safe" id="riskLevel">低风险</span>
-              <h2 id="reportTitle">示例地址安全报告</h2>
-              <p id="reportAddress">当前展示为预览数据，真实接口接入后自动生成检测结果。</p>
+              <span class="status-pill safe" id="riskLevel">待检测</span>
+              <h2 id="reportTitle">地址安全报告</h2>
+              <p id="reportAddress">--</p>
             </div>
           </div>
 
           <div class="metric-grid">
             <article>
               <span>USDT 收入</span>
-              <strong id="incomeValue">128,640</strong>
+              <strong id="incomeValue">--</strong>
               <small>近 90 天</small>
             </article>
             <article>
               <span>USDT 支出</span>
-              <strong id="outcomeValue">92,180</strong>
+              <strong id="outcomeValue">--</strong>
               <small>近 90 天</small>
             </article>
             <article>
               <span>交易对象</span>
-              <strong id="counterpartyValue">46</strong>
+              <strong id="counterpartyValue">--</strong>
               <small>去重地址</small>
             </article>
             <article>
               <span>风险命中</span>
-              <strong id="hitValue">0</strong>
+              <strong id="hitValue">--</strong>
               <small>黑名单/投毒</small>
             </article>
           </div>
@@ -139,6 +139,22 @@
         </section>
       </main>
     </div>
+
+    <dialog class="batch-dialog" id="batchDialog">
+      <form class="batch-dialog-card" id="batchForm">
+        <div class="batch-dialog-head">
+          <div><span>批量风险检测</span><strong>最多 20 个双链地址</strong></div>
+          <button type="button" id="batchClose" aria-label="关闭">×</button>
+        </div>
+        <textarea id="batchAddresses" rows="7" placeholder="每行一个地址，也支持逗号分隔"></textarea>
+        <p id="batchStatus">系统会自动识别 TRON / Ethereum。</p>
+        <div class="batch-actions">
+          <button type="button" id="batchCancel">取消</button>
+          <button type="submit">开始检测</button>
+        </div>
+        <div class="batch-results" id="batchResults"></div>
+      </form>
+    </dialog>
 
     <script src="./config.js"></script>
     <script src="./app.js" type="module"></script>
