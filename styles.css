@@ -36,6 +36,8 @@ button {
   cursor: pointer;
 }
 
+button:disabled { cursor: not-allowed; opacity: 0.62; }
+
 .guard-shell {
   width: min(100%, 430px);
   min-height: 100vh;
@@ -401,6 +403,14 @@ main {
   color: white;
   background: var(--red);
 }
+
+.check-card.pending .check-icon { color: #d8edff; background: rgba(138, 162, 188, 0.22); }
+.evidence-panel { margin-top: 26px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(13, 26, 45, 0.78); }
+.evidence-panel[hidden] { display: none; }
+.evidence-panel ul { display: grid; gap: 8px; margin: 14px 0 0; padding-left: 20px; color: #d8edff; }
+.evidence-panel li { line-height: 1.55; }
+.retention-card.unavailable { opacity: 0.68; }
+.retention-card small { display: block; margin-top: 8px; color: var(--yellow); }
 
 .check-card h3 {
   margin: 0;

@@ -16,7 +16,7 @@
             <small>Address Guard</small>
           </span>
         </a>
-        <button class="ghost-button" type="button">TG 监控</button>
+        <button class="ghost-button" type="button" disabled title="Telegram 订阅接口待接入">TG 监控 · 待接入</button>
       </header>
 
       <nav class="suite-nav" aria-label="产品导航">
@@ -92,37 +92,42 @@
             <h2>检测项目</h2>
           </div>
 
-          <article class="check-card clear">
+          <article class="check-card pending" id="reviewedCheck">
             <span class="check-icon">✓</span>
             <div>
               <h3>黑名单地址排查</h3>
-              <p>检测地址是否命中已知风险库、交易所冻结标签或异常资金来源。</p>
+              <p>完成地址检测后展示真实结果。</p>
             </div>
           </article>
 
-          <article class="check-card warn">
+          <article class="check-card pending" id="activityCheck">
             <span class="check-icon">!</span>
             <div>
-              <h3>地址投毒相似记录</h3>
-              <p>识别最近交易中是否存在首尾相似、诱导复制的可疑地址。</p>
+              <h3>行为规则与资金活动</h3>
+              <p>完成地址检测后展示当前数据源支持的规则。</p>
             </div>
           </article>
 
-          <article class="check-card clear">
+          <article class="check-card pending" id="approvalCheck">
             <span class="check-icon">✓</span>
             <div>
-              <h3>USDT 异常收付分析</h3>
-              <p>统计大额、密集、小额测试等异常交易模式，辅助判断地址质量。</p>
+              <h3>授权风险检测</h3>
+              <p>完成地址检测后展示授权数据源状态。</p>
             </div>
           </article>
 
-          <article class="check-card danger">
+          <article class="check-card pending" id="completenessCheck">
             <span class="check-icon">!</span>
             <div>
-              <h3>授权风险检测</h3>
-              <p>Ethereum 地址可扩展检测 ERC-20 授权额度和高风险合约交互。</p>
+              <h3>数据完整性</h3>
+              <p>完成地址检测后展示数据缺口和限制。</p>
             </div>
           </article>
+        </section>
+
+        <section class="evidence-panel" id="evidencePanel" hidden>
+          <div class="section-head"><span>Evidence</span><h2>规则与证据摘要</h2></div>
+          <ul id="riskEvidence"></ul>
         </section>
 
         <section class="tools">
@@ -130,11 +135,12 @@
           <button class="secondary-action" id="shareButton" type="button">生成报告链接</button>
         </section>
 
-        <section class="retention-card">
+        <section class="retention-card unavailable" aria-disabled="true">
           <span class="tg-mark">↗</span>
           <div>
             <h2>TG 地址监控提醒</h2>
             <p>地址出现大额转入、异常转出、投毒记录时自动提醒，适合 OTC、工作室和高频收款场景。</p>
+            <small>Telegram 订阅接口待接入</small>
           </div>
         </section>
       </main>

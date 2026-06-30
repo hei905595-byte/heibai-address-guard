@@ -1,7 +1,10 @@
+import { addressError, isValidAddress } from "./validation.mjs";
+
 const DEFAULT_CONFIG = {
   siteHost: "heibai.com",
   endpoints: {
     scanTron: "/api/risk/tron",
+    tronIntel: "/api/intel/tron",
     scanEthereum: "/api/risk/ethereum",
     batchScan: "/api/risk/batch",
   },
@@ -35,6 +38,7 @@ const input = document.querySelector("#addressInput");
 const status = document.querySelector("#scanStatus");
 const reportPanel = document.querySelector("#riskReport");
 const chainButtons = document.querySelectorAll(".chain-switch button");
+const scanButton = form.querySelector('button[type="submit"]');
 
 document.querySelectorAll("[data-app-link]").forEach((link) => {
   link.href = CONFIG.navigation[link.dataset.appLink];
@@ -53,8 +57,14 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const address = input.value.trim();
   if (!address) return;
+  if (!isValidAddress(state.chain, address)) {
+    status.textContent = addressError(state.chain);
+    input.focus();
+    return;
+  }
 
   status.textContent = "正在检测，请稍候…";
+  setBusy(scanButton, true, "检测中…");
   reportPanel.hidden = true;
   try {
     const report = await scanAddress(state.chain, address);
@@ -63,6 +73,8 @@ form.addEventListener("submit", async (event) => {
     status.textContent = report.disclaimer || "检测完成；结果来自正式风险接口。";
   } catch (error) {
     status.textContent = error instanceof Error ? error.message : "检测失败，请稍后重试。";
+  } finally {
+    setBusy(scanButton, false, "检测");
   }
 });
 
@@ -81,6 +93,8 @@ batchForm.addEventListener("submit", async event => {
   const addresses = parseBatchInput(batchAddresses.value);
   if (!addresses.length) { batchStatus.textContent = "请至少输入一个地址。"; return; }
   if (addresses.length > 20) { batchStatus.textContent = "每次最多检测 20 个地址。"; return; }
+  const invalid = addresses.filter(address => !isValidAddress(address.startsWith("0x") ? "ethereum" : "tron", address));
+  if (invalid.length) { batchStatus.textContent = `发现 ${invalid.length} 个无效地址，请检查格式。`; return; }
   batchStatus.textContent = `正在检测 ${addresses.length} 个地址…`;
   batchResults.replaceChildren();
   try {
@@ -122,7 +136,12 @@ async function scanAddress(chain, address) {
   }
 
   const url = `${endpoint.replace(/\/+$/, "")}/${encodeURIComponent(address)}`;
-  const response = await fetch(url);
+  const [response, intelResponse] = await Promise.all([
+    fetchWithTimeout(url),
+    chain === "tron"
+      ? fetchWithTimeout(`${CONFIG.endpoints.tronIntel.replace(/\/+$/, "")}/${encodeURIComponent(address)}`).catch(() => null)
+      : Promise.resolve(null),
+  ]);
   if (!response.ok) {
     let detail = "";
     try {
@@ -131,7 +150,9 @@ async function scanAddress(chain, address) {
     } catch {}
     throw new Error(detail || `风险接口暂不可用（${response.status}），未生成模拟报告。`);
   }
-  return normalizeReport(await response.json());
+  const report = normalizeReport(await response.json());
+  if (intelResponse?.ok) report.intel = await intelResponse.json();
+  return report;
 }
 
 function normalizeReport(payload) {
@@ -146,6 +167,7 @@ function normalizeReport(payload) {
     outcome: payload.outcome ?? payload.usdtOut ?? null,
     counterparties: payload.counterparties ?? payload.counterpartyCount ?? null,
     hits: payload.hits ?? payload.riskHits ?? 0,
+    evidence: Array.isArray(payload.evidence) ? payload.evidence : [],
     disclaimer: payload.disclaimer || "风险结果仅供辅助判断，不构成资金安全保证。",
   };
 }
@@ -171,7 +193,52 @@ function renderReport(chain, address, report) {
     report.counterparties,
   );
   document.querySelector("#hitValue").textContent = formatNumber(report.hits);
+  renderChecks(chain, report);
   state.lastReport = { chain, address };
+}
+
+function renderChecks(chain, report) {
+  const intel = report.intel;
+  const rules = intel?.riskAssessment?.rules || [];
+  const warnings = intel?.completeness?.warnings || [];
+  const evidence = report.evidence || [];
+  setCheck("reviewedCheck", evidence.length ? "danger" : "clear", evidence.length ? `命中 ${evidence.length} 条已审核风险证据。` : "当前已审核风险库未命中；未命中不代表安全。");
+  setCheck("activityCheck", rules.length ? "warn" : (intel ? "clear" : "pending"), rules.length ? rules.map(item => `${item.title}（+${item.points || 0}）`).join("；") : (intel ? "当前扫描窗口未命中 TRON 行为规则。" : "深度行为索引尚未接入。"));
+  const approvals = intel?.approvals;
+  const riskyApprovals = Number(intel?.approvalRiskSummary?.high || 0) + Number(intel?.approvalRiskSummary?.medium || 0);
+  setCheck("approvalCheck", approvals?.enabled ? (riskyApprovals ? "danger" : "clear") : "pending", approvals?.enabled ? `已扫描 ${approvals.scanned || 0} 条授权，风险授权 ${riskyApprovals} 条。` : (chain === "ethereum" ? "Ethereum ERC-20 授权数据源待接入。" : "授权数据暂不可用。"));
+  setCheck("completenessCheck", warnings.length ? "warn" : (intel ? "clear" : "pending"), intel ? (warnings.length ? warnings.join("；") : "TRON 情报数据源本次返回完整。") : "当前仅有基础风险库结果，深度数据待接入。");
+  const list = document.querySelector("#riskEvidence");
+  list.replaceChildren();
+  [...evidence, ...rules].forEach(item => {
+    const row = document.createElement("li");
+    row.textContent = item.summary || item.title || item.id || "风险证据";
+    list.append(row);
+  });
+  document.querySelector("#evidencePanel").hidden = list.children.length === 0;
+}
+
+function setCheck(id, tone, text) {
+  const node = document.querySelector(`#${id}`);
+  node.className = `check-card ${tone}`;
+  node.querySelector(".check-icon").textContent = tone === "clear" ? "✓" : tone === "pending" ? "…" : "!";
+  node.querySelector("p").textContent = text;
+}
+
+async function fetchWithTimeout(url, options) {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), 15000);
+  try { return await fetch(url, { ...options, signal: controller.signal }); }
+  catch (error) {
+    if (error?.name === "AbortError") throw new Error("接口响应超时，请稍后重试。");
+    throw new Error("网络连接失败，请检查网络后重试。");
+  } finally { window.clearTimeout(timer); }
+}
+
+function setBusy(button, busy, label) {
+  button.disabled = busy;
+  button.textContent = label;
+  button.setAttribute("aria-busy", String(busy));
 }
 
 function formatNumber(value) {
