@@ -123,7 +123,14 @@ async function scanAddress(chain, address) {
 
   const url = `${endpoint.replace(/\/+$/, "")}/${encodeURIComponent(address)}`;
   const response = await fetch(url);
-  if (!response.ok) throw new Error(`风险接口暂不可用（${response.status}），未生成模拟报告。`);
+  if (!response.ok) {
+    let detail = "";
+    try {
+      const payload = await response.json();
+      detail = payload?.error?.message || payload?.error || "";
+    } catch {}
+    throw new Error(detail || `风险接口暂不可用（${response.status}），未生成模拟报告。`);
+  }
   return normalizeReport(await response.json());
 }
 

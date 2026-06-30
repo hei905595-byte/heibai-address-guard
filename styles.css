@@ -218,8 +218,17 @@ main {
   border: 0;
   outline: none;
   color: var(--text);
+  caret-color: var(--cyan);
+  -webkit-text-fill-color: var(--text);
   background: transparent;
   font-size: 15px;
+}
+
+.input-row input:-webkit-autofill,
+.input-row input:-webkit-autofill:hover,
+.input-row input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  box-shadow: 0 0 0 1000px #0a1728 inset;
 }
 
 .input-row input::placeholder {
